@@ -96,7 +96,6 @@ def show():
                 st.error(f"Gagal menampilkan peta: {e}")
 
         with tab2:
-            st.markdown("#### Nilai Polutan yang Diuji (µmol/m³)")
             polutan_data = st.session_state.get("polutan_input")
 
             if polutan_data:
@@ -116,8 +115,19 @@ def show():
                 # Tampilkan nilai di atas batang
                 for bar in bars:
                     yval = bar.get_height()
-                    ax.text(bar.get_x() + bar.get_width()/2, yval + 0.0005, f"{yval:.4f}",
-                            ha='center', va='bottom', fontsize=9)
+                    offset = abs(yval) * 0.2 if abs(yval) > 0 else 0.0005
+                    offset = max(offset, 0.0005)
+                    va_align = 'bottom' if yval >= 0 else 'top'
+
+                    ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        yval + (offset if yval >= 0 else -offset),
+                        f"{yval:.4f}",
+                        ha='center',
+                        va=va_align,
+                        fontsize=9
+                    )
+                ax.margins(y=0.25)
                 st.pyplot(fig)
             else:
                 st.info("Data polutan belum tersimpan dari pengujian.")

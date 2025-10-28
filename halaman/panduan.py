@@ -66,7 +66,7 @@ def show():
             <div class="panduan-title">2. Pelatihan & Pengujian Model</div>
             <div class="panduan-desc">
                 Pada modul ini, pengguna dapat <b>melatih model SVM secara mandiri</b> dengan mengunggah dataset, 
-                mengatur parameter (kernel, C, dan gamma), dan memilih model terbaik. 
+                mengatur parameter (C dan gamma), dan memilih model terbaik. 
                 Setelah model berhasil dilatih, pengguna dapat <b>melakukan pengujian</b> menggunakan data baru untuk memperoleh hasil klasifikasi.
             </div>
         </div>

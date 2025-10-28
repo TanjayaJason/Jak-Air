@@ -171,10 +171,10 @@ def show_testing_form():
         st.markdown("<p>Masukkan nilai polutan (µmol/m³):</p>", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         col3, col4 = st.columns(2)
-        so2 = col1.number_input("SO₂", min_value=0.0, step=0.0001, format="%.4f")
-        co = col2.number_input("CO", min_value=0.0, step=0.0001, format="%.4f")
-        o3 = col3.number_input("O₃", min_value=0.0, step=0.0001, format="%.4f")
-        no2 = col4.number_input("NO₂", min_value=0.0, step=0.0001, format="%.4f")
+        so2 = col1.number_input("SO₂", value=0.0, step=0.0001, format="%.4f")
+        co = col2.number_input("CO", value=0.0, step=0.0001, format="%.4f")
+        o3 = col3.number_input("O₃", value=0.0, step=0.0001, format="%.4f")
+        no2 = col4.number_input("NO₂", value=0.0, step=0.0001, format="%.4f")
         submit = st.form_submit_button("🔍 Prediksi")
 
     if submit:
