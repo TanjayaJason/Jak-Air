@@ -17,7 +17,7 @@ def show():
         <p style="text-align:justify; font-size:16px;">
             Aplikasi ini dirancang untuk memantau dan mengklasifikasikan kualitas udara di wilayah DKI Jakarta menggunakan data satelit Sentinel-5P. 
             Melalui integrasi teknologi penginderaan jauh dan <em>machine learning</em>, aplikasi ini memanfaatkan algoritma <em>Support Vector Machine (SVM)</em> dengan dua jenis kernel, yaitu 
-            Linear dan <em>Radial Basis Function (RBF)</em, untuk menentukan kategori kualitas udara secara keseluruhan di DKI Jakarta.<br>
+            Linear dan <em>Radial Basis Function (RBF)</em>, untuk menentukan kategori kualitas udara secara keseluruhan di DKI Jakarta.<br>
             Selain menampilkan peta sebaran polutan, aplikasi ini juga menyediakan menu pelatihan dan pengujian model secara mandiri. 
             Pengguna dapat mengunggah dataset, melakukan eksperimen parameter, melatih model SVM, dan langsung menguji hasil prediksinya melalui antarmuka web yang interaktif dan mudah digunakan. 
             Sistem ini diharapkan dapat membantu pengguna memahami kondisi udara dan melakukan analisis secara cepat, fleksibel, dan informatif.

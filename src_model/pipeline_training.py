@@ -67,6 +67,15 @@ def run_training(df, C_val, gamma_val):
         df_clean["T2_stat"] > UCL, "tidak sehat", "sehat"
     )
 
+    # Simpan model T² di session_state
+    trained_t2 = {
+        "mean": mean_vec,
+        "cov_inv": cov_inv,
+        "UCL": UCL,
+        "feature_cols": feature_cols
+    }
+    st.session_state["trained_t2"] = trained_t2
+
     # Ringkasan kategori
     st.markdown("#### Ringkasan Kategori")
     label_counts = df_clean["kategori_multivariat"].value_counts()
@@ -78,6 +87,23 @@ def run_training(df, C_val, gamma_val):
 
     st.write("Preview data setelah labeling:")
     st.dataframe(df_clean.head(10))
+
+    # Sortir berdasarkan nilai T²
+    df_sorted_asc = df_clean.sort_values(by="T2_stat", ascending=True)
+    df_sorted_desc = df_clean.sort_values(by="T2_stat", ascending=False)
+
+    # Ambil 10 data terendah (sehat) dan 10 tertinggi (tidak sehat)
+    df_terendah = df_sorted_asc.head(10).drop(columns=["kategori_multivariat"])
+    df_tertinggi = df_sorted_desc.head(10).drop(columns=["kategori_multivariat"])
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**10 Data Paling Sehat**")
+        st.dataframe(df_terendah, width="stretch")
+
+    with col2:
+        st.markdown("**10 Data Paling Tidak Sehat**")
+        st.dataframe(df_tertinggi, width="stretch")
 
     # === 3️⃣ Training Model SVM ===
     st.markdown("### 3️⃣ Training Model Custom (SVM)")
@@ -98,6 +124,13 @@ def run_training(df, C_val, gamma_val):
 
     linear_model.fit(X_train, y_train)
     rbf_model.fit(X_train, y_train)
+
+    # === Train model full data (for prediction use) ===
+    linear_final = SVC(kernel='linear', C=C_val)
+    rbf_final = SVC(kernel='rbf', C=C_val, gamma=gamma_val)
+
+    linear_final.fit(X_scaled, y)
+    rbf_final.fit(X_scaled, y)
 
     y_pred_linear = linear_model.predict(X_test)
     y_pred_rbf = rbf_model.predict(X_test)
@@ -145,6 +178,9 @@ def run_training(df, C_val, gamma_val):
     trained_models = {
         "linear": linear_model,
         "rbf": rbf_model,
+        # Model final 100% data (untuk prediksi user)
+        "linear_final": linear_final,
+        "rbf_final": rbf_final,
         "scaler": scaler,
         "feature_cols": feature_cols,
     }

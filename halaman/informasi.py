@@ -82,6 +82,9 @@ def show():
             st.write("**Dampak kesehatan dan lingkungan:**")
             st.write("- Mengiritasi saluran pernapasan dan memperburuk penyakit paru.")
             st.write("- Merusak vegetasi dan menurunkan hasil pertanian.")
+            st.write("**Baku Mutu WHO 2021:**")
+            st.write("- **60 µg/m³** untuk *peak season* (rata-rata 6 bulan).")
+            st.write("- **100 µg/m³** untuk rata-rata **8 jam**.")
 
         elif sel == "CO":
             st.subheader("CO (Karbon Monoksida)")
@@ -95,6 +98,8 @@ def show():
             st.write("**Dampak kesehatan:**")
             st.write("- Mengikat hemoglobin lebih kuat dari oksigen → menghambat suplai oksigen ke tubuh.")
             st.write("- Paparan tinggi dapat menyebabkan pusing, mual, hingga kematian.")
+            st.write("**Baku Mutu WHO 2021:**")
+            st.write("- **4 mg/m³** untuk rata-rata **24 jam**.")
 
         elif sel == "SO2":
             st.subheader("SO₂ (Sulfur Dioksida)")
@@ -108,6 +113,8 @@ def show():
             st.write("**Dampak kesehatan dan lingkungan:**")
             st.write("- Menyebabkan iritasi tenggorokan dan bronkospasme.")
             st.write("- Berkontribusi terhadap pembentukan hujan asam dan kabut.")
+            st.write("**Baku Mutu WHO 2021:**")
+            st.write("- **40 µg/m³** untuk rata-rata **24 jam**.")
 
         elif sel == "NO2":
             st.subheader("NO₂ (Nitrogen Dioksida)")
@@ -121,6 +128,9 @@ def show():
             st.write("**Dampak kesehatan dan lingkungan:**")
             st.write("- Menyebabkan iritasi saluran napas dan menurunkan fungsi paru-paru.")
             st.write("- Berperan dalam pembentukan partikel halus (PM2.5) dan ozon permukaan.")
+            st.write("**Baku Mutu WHO 2021:**")
+            st.write("- **10 µg/m³** untuk rata-rata **tahunan**.")
+            st.write("- **25 µg/m³** untuk rata-rata **24 jam**.")
 
         elif sel == "Metode":
             st.subheader("Metode Klasifikasi — Support Vector Machine (SVM)")

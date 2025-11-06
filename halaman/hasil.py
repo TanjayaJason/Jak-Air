@@ -78,6 +78,19 @@ def show():
         else:
             st.info("Belum ada parameter model yang tersimpan.")
 
+        # --- Informasi polutan input ---
+        st.subheader("Konsentrasi Polutan Input")
+        polutan_data = st.session_state.get("polutan_input")
+        if polutan_data:
+            st.markdown(f"""
+                <div class="param-card">
+                    <p><span class="param-label">SO₂:</span> <span class="param-value">{polutan_data.get('so2', 0):.4f}</span></p>
+                    <p><span class="param-label">CO:</span> <span class="param-value">{polutan_data.get('co', 0):.4f}</span></p>
+                    <p><span class="param-label">O₃:</span> <span class="param-value">{polutan_data.get('o3', 0):.4f}</span></p>
+                    <p><span class="param-label">NO₂:</span> <span class="param-value">{polutan_data.get('no2', 0):.4f}</span></p>
+                </div>
+            """, unsafe_allow_html=True)
+
     with col2:
         # === Tabs untuk Peta dan Grafik Polutan ===
         tab1, tab2 = st.tabs(["🗺️ Peta Kualitas Udara", "📊 Grafik Polutan"])
@@ -89,48 +102,38 @@ def show():
                 fig, ax = plt.subplots(figsize=(3.5, 3.5))
                 jakarta.plot(ax=ax, color=warna, edgecolor="black", linewidth=1)
                 ax.set_title(f"Peta Kualitas Udara DKI Jakarta — {hasil.upper()}",
-                             fontsize=12, fontweight="bold")
+                             fontsize=11, fontweight="bold")
                 ax.axis("off")
                 st.pyplot(fig)
             except Exception as e:
                 st.error(f"Gagal menampilkan peta: {e}")
 
         with tab2:
-            polutan_data = st.session_state.get("polutan_input")
+            if "t2_user" in st.session_state and "t2_threshold" in st.session_state:
+                t2_user = st.session_state["t2_user"]
+                t2_thr = st.session_state["t2_threshold"]
 
-            if polutan_data:
-                labels = ["SO₂", "CO", "O₃", "NO₂"]
-                values = [
-                    polutan_data.get("so2", 0),
-                    polutan_data.get("co", 0),
-                    polutan_data.get("o3", 0),
-                    polutan_data.get("no2", 0)
-                ]
+                fig, ax = plt.subplots(figsize=(3.5, 3.5))
 
-                fig, ax = plt.subplots(figsize=(4, 3))
-                bars = ax.bar(labels, values, color=["#5DADE2", "#48C9B0", "#F4D03F", "#E74C3C"])
-                ax.set_ylabel("Konsentrasi (µmol/m³)")
-                ax.set_title("Grafik Polutan Udara yang Diuji", fontsize=11, fontweight="bold", pad=10)
+                # Batang vertikal untuk T² input user
+                ax.bar(["T² Input"], [t2_user], color="#3498DB", width=0.4)
 
-                # Tampilkan nilai di atas batang
-                for bar in bars:
-                    yval = bar.get_height()
-                    offset = abs(yval) * 0.2 if abs(yval) > 0 else 0.0005
-                    offset = max(offset, 0.0005)
-                    va_align = 'bottom' if yval >= 0 else 'top'
+                # Garis horizontal untuk batas T²
+                ax.axhline(t2_thr, linestyle="--", linewidth=1, color="#E74C3C", label=f"Batas T²: {t2_thr:.4f}")
 
-                    ax.text(
-                        bar.get_x() + bar.get_width() / 2,
-                        yval + (offset if yval >= 0 else -offset),
-                        f"{yval:.4f}",
-                        ha='center',
-                        va=va_align,
-                        fontsize=9
-                    )
-                ax.margins(y=0.25)
+                # Label nilai batang
+                ax.text(0, t2_user + 0.02*t2_thr, f"{t2_user:.4f}", ha='center', fontsize=9)
+
+                ax.set_ylabel("Nilai T²")
+                ax.set_ylim(0, max(t2_user*1.2, t2_thr*1.2))
+                ax.set_xticks([])
+                ax.set_title("Nilai T²", fontsize=11, fontweight="bold")
+                ax.legend(loc="upper right", frameon=False)
+
                 st.pyplot(fig)
+
             else:
-                st.info("Data polutan belum tersimpan dari pengujian.")
+                st.info("Nilai T² belum dihitung pada proses pengujian.")
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("🔙 Kembali ke Pengujian"):

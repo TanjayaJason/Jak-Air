@@ -104,7 +104,7 @@ def show():
 
         # Inisialisasi default model Linear
         st.session_state.kernel_choice = "Linear"
-        st.session_state.selected_model = trained_models.get("linear")
+        st.session_state.selected_model = trained_models.get("linear_final")
         st.session_state.scaler = trained_models.get("scaler")
         st.session_state.feature_cols = trained_models.get("feature_cols")
         st.session_state.selected_params = {"kernel": "linear", "C": C_val, "gamma": gamma_val}
@@ -122,7 +122,7 @@ def show():
             # Pastikan ada key default kernel_choice
             if "kernel_choice" not in st.session_state:
                 st.session_state.kernel_choice = "Linear"
-                st.session_state.selected_model = trained.get("linear")
+                st.session_state.selected_model = trained_models.get("linear_final")
                 st.session_state.scaler = trained.get("scaler")
                 st.session_state.feature_cols = trained.get("feature_cols")
                 st.session_state.selected_params = {"kernel": "linear", "C": C_val, "gamma": gamma_val}
@@ -135,7 +135,10 @@ def show():
                 key="kernel_choice"
             )
 
-            st.session_state.selected_model = trained.get("linear") if st.session_state.kernel_choice=="Linear" else trained.get("rbf")
+            if st.session_state.kernel_choice == "Linear":
+                st.session_state.selected_model = trained.get("linear_final")
+            else:
+                st.session_state.selected_model = trained.get("rbf_final")
             st.session_state.selected_params = {
                 "kernel": kernel_choice.lower(),
                 "C": C_val,
@@ -165,10 +168,13 @@ def show():
         else:
             st.warning("Hasil pelatihan belum tersedia. Jalankan pelatihan terlebih dahulu.")
 
+def compute_T2(x_row, mean_vec, cov_inv):
+    x = np.array(x_row, dtype=float)
+    return float((x - mean_vec) @ cov_inv @ (x - mean_vec).T)
 
 def show_testing_form():
     with st.form("uji_form"):
-        st.markdown("<p>Masukkan nilai polutan (µmol/m³):</p>", unsafe_allow_html=True)
+        st.markdown("<p>Masukkan nilai polutan (mol/m²):</p>", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         col3, col4 = st.columns(2)
         so2 = col1.number_input("SO₂", value=0.0, step=0.0001, format="%.4f")
@@ -178,6 +184,19 @@ def show_testing_form():
         submit = st.form_submit_button("🔍 Prediksi")
 
     if submit:
+        t2_param = st.session_state["trained_t2"]
+
+        mean_vec = t2_param["mean"]
+        cov_inv = t2_param["cov_inv"]
+        t2_threshold = t2_param["UCL"]
+
+        # Input user harus diurutkan sesuai feature_cols
+        input_row = [so2, co, o3, no2]
+        t2_user = compute_T2(input_row, mean_vec, cov_inv)
+
+        st.session_state["t2_user"] = t2_user
+        st.session_state["t2_threshold"] = t2_threshold
+
         model = st.session_state.selected_model
         scaler = st.session_state.scaler
 

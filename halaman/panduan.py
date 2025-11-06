@@ -46,7 +46,7 @@ def show():
     # ===================== JUDUL =====================
     st.markdown("<h1>Panduan</h1><hr>", unsafe_allow_html=True)
 
-    # ===================== ISI PANDUAN (KONTEN SAMA PERSIS) =====================
+    # ===================== ISI PANDUAN =====================
     st.markdown("""
         <div class="panduan-desc"> 
             Halaman ini berisi penjelasan singkat mengenai fungsi setiap modul pada aplikasi <b>JakAir</b>. 
