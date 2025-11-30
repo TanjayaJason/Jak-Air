@@ -20,16 +20,26 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
           
-          # Aktifkan LFS dan track file binary
+          # 1. Install Git LFS
           git lfs install
+          
+          # 2. Track SEMUA tipe file binary kamu (Gambar, PDF, dan Shapefile)
           git lfs track "*.png"
-          git lfs track "*.pdf"
           git lfs track "*.jpg"
+          git lfs track "*.jpeg"
+          git lfs track "*.pdf"
+          git lfs track "*.shp"
+          git lfs track "*.shx"
+          git lfs track "*.dbf"
+          git lfs track "*.sbn"
+          git lfs track "*.sbx"
           
-          # Update atribut file agar dikenali sebagai LFS
+          # 3. Update .gitattributes
           git add .gitattributes
-          git add .
-          git commit -m "Convert binaries to LFS" || true
           
-          # Push ke Hugging Face
+          # 4. MEMAKSA Git untuk memproses ulang file lama menjadi LFS (Kunci Solusinya!)
+          git add --renormalize .
+          
+          # 5. Commit dan Push
+          git commit -m "Force convert all binaries to LFS" || true
           git push --force https://TanjayaJason:$HF_TOKEN@huggingface.co/spaces/TanjayaJason/Jak-Air main
