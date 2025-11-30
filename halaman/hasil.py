@@ -41,8 +41,8 @@ def show():
     params = st.session_state.get("selected_params", {})
 
     warna_map = {
-        "sehat": ("#d4edda", "#1AB63F", "✅"),
-        "tidak sehat": ("#f8d7da", "#721c24", "⚠️"),
+        "baik": ("#d4edda", "#226627", "✅"),
+        "kurang baik": ("#d4edda", "#ACCA03", "⚠️"),
         "default": ("#e2e3e5", "#383d41", "ℹ️")
     }
     warna_bg, warna_teks, ikon = warna_map.get(hasil, warna_map["default"])
@@ -65,14 +65,21 @@ def show():
             C_val = params.get("C", "N/A")
             gamma_val = params.get("gamma", "-")
 
+            if kernel == "LINEAR":
+                html_gamma = ""
+            else:
+                html_gamma = f"""
+                <p><span class="param-label">Gamma:</span> 
+                   <span class="param-value">{gamma_val}</span></p>
+                """
+
             st.markdown(f"""
                 <div class="param-card">
                     <p><span class="param-label">Kernel:</span> 
                         <span class="param-value">{kernel}</span></p>
                     <p><span class="param-label">C (Regularisasi):</span> 
                         <span class="param-value">{C_val}</span></p>
-                    <p><span class="param-label">Gamma:</span> 
-                        <span class="param-value">{gamma_val}</span></p>
+                    {html_gamma}
                 </div>
             """, unsafe_allow_html=True)
         else:
@@ -98,7 +105,7 @@ def show():
         with tab1:
             try:
                 jakarta = gpd.read_file("Data/Jakarta_Batas_Admin/dki_jakarta.shp")
-                warna = {"sehat": "#7AE582", "tidak sehat": "#FF6B6B"}.get(hasil, "#B0B0B0")
+                warna = {"baik": "#226627", "kurang baik": "#ACCA03"}.get(hasil, "#B0B0B0")
                 fig, ax = plt.subplots(figsize=(3.5, 3.5))
                 jakarta.plot(ax=ax, color=warna, edgecolor="black", linewidth=1)
                 ax.set_title(f"Peta Kualitas Udara DKI Jakarta — {hasil.upper()}",

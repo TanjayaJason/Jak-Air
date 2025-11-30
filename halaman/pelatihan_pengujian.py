@@ -145,13 +145,25 @@ def show():
                 "gamma": gamma_val
             }
 
+            params = st.session_state.selected_params
+            c_display = params["C"]
+            gamma_display = params["gamma"]
+
+            # Buat string HTML secara dinamis
+            if st.session_state.kernel_choice == "Linear":
+                # Jika Linear: Hanya tampilkan C
+                param_html = f"<b>C:</b> {c_display}"
+            else:
+                # Jika RBF: Tampilkan C dan Gamma
+                param_html = f"<b>C:</b> {c_display} &nbsp; | &nbsp; <b>Gamma:</b> {gamma_display}"
+
             # Tampilkan info model dan metrik
             col1, col2 = st.columns([1.2, 2])
             with col1:
                 st.markdown(f"""
                     <div style="background-color:#f8f9fa; padding:12px; border-radius:10px; text-align:center; border:1px solid #dcdcdc;">
                         <b>Model terpilih:</b> {st.session_state.kernel_choice} Kernel<br>
-                        <b>C:</b> {C_val} &nbsp; | &nbsp; <b>Gamma:</b> {gamma_val}
+                        {param_html}
                     </div>
                 """, unsafe_allow_html=True)
 

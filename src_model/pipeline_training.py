@@ -55,7 +55,7 @@ def run_training(df, C_val, gamma_val):
     T2_values = [float((x - mean_vec) @ cov_inv @ (x - mean_vec).T) for x in X]
     df_clean["T2_stat"] = T2_values
 
-    alpha = 0.01
+    alpha = 0.5 # Mempengaruhi jumlah kategori "baik" vs "kurang baik"
     UCL = (p * (n - 1) / (n - p)) * f.ppf(1 - alpha, p, n - p) if n > p else np.nan
     if np.isnan(UCL):
         st.error("UCL tidak dapat dihitung karena n <= p.")
@@ -64,7 +64,7 @@ def run_training(df, C_val, gamma_val):
 
     # Label lowercase supaya konsisten
     df_clean["kategori_multivariat"] = np.where(
-        df_clean["T2_stat"] > UCL, "tidak sehat", "sehat"
+        df_clean["T2_stat"] > UCL, "kurang baik", "baik"
     )
 
     # Simpan model T² di session_state
@@ -81,9 +81,9 @@ def run_training(df, C_val, gamma_val):
     label_counts = df_clean["kategori_multivariat"].value_counts()
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("Jumlah Sehat", label_counts.get("sehat", 0))
+        st.metric("Jumlah Baik", label_counts.get("baik", 0))
     with col2:
-        st.metric("Jumlah Tidak Sehat", label_counts.get("tidak sehat", 0))
+        st.metric("Jumlah Kurang Baik", label_counts.get("kurang baik", 0))
 
     st.write("Preview data setelah labeling:")
     st.dataframe(df_clean.head(10))
@@ -92,17 +92,17 @@ def run_training(df, C_val, gamma_val):
     df_sorted_asc = df_clean.sort_values(by="T2_stat", ascending=True)
     df_sorted_desc = df_clean.sort_values(by="T2_stat", ascending=False)
 
-    # Ambil 10 data terendah (sehat) dan 10 tertinggi (tidak sehat)
+    # Ambil 10 data terendah (baik) dan 10 tertinggi (kurang baik)
     df_terendah = df_sorted_asc.head(10).drop(columns=["kategori_multivariat"])
     df_tertinggi = df_sorted_desc.head(10).drop(columns=["kategori_multivariat"])
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("**10 Data Paling Sehat**")
+        st.markdown("**10 Data Paling Baik**")
         st.dataframe(df_terendah, width="stretch")
 
     with col2:
-        st.markdown("**10 Data Paling Tidak Sehat**")
+        st.markdown("**10 Data Paling Kurang Baik**")
         st.dataframe(df_tertinggi, width="stretch")
 
     # === 3️⃣ Training Model SVM ===
@@ -154,6 +154,7 @@ def run_training(df, C_val, gamma_val):
 
     # === 4️⃣ Tampilkan hasil ===
     st.markdown("#### 🔍 Perbandingan Model")
+    class_names = ["Baik", "Kurang Baik"]
     col1, col2 = st.columns(2)
 
     with col1:
@@ -162,7 +163,9 @@ def run_training(df, C_val, gamma_val):
             if m != "Confusion Matrix":
                 st.write(f"**{m}:** {v:.4f}")
         fig, ax = plt.subplots()
-        sns.heatmap(results["Linear"]["Confusion Matrix"], annot=True, fmt="d", cmap="Blues", ax=ax)
+        sns.heatmap(results["Linear"]["Confusion Matrix"], annot=True, fmt="d", cmap="Blues", ax=ax, xticklabels=class_names, yticklabels=class_names)
+        ax.set_xlabel("Prediksi")
+        ax.set_ylabel("Aktual")
         st.pyplot(fig)
 
     with col2:
@@ -171,7 +174,9 @@ def run_training(df, C_val, gamma_val):
             if m != "Confusion Matrix":
                 st.write(f"**{m}:** {v:.4f}")
         fig, ax = plt.subplots()
-        sns.heatmap(results["RBF"]["Confusion Matrix"], annot=True, fmt="d", cmap="Blues", ax=ax)
+        sns.heatmap(results["RBF"]["Confusion Matrix"], annot=True, fmt="d", cmap="Blues", ax=ax, xticklabels=class_names, yticklabels=class_names)
+        ax.set_xlabel("Prediksi")
+        ax.set_ylabel("Aktual")
         st.pyplot(fig)
 
     # Simpan hasil training
