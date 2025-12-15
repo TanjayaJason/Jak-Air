@@ -55,7 +55,7 @@ def run_training(df, C_val, gamma_val):
     T2_values = [float((x - mean_vec) @ cov_inv @ (x - mean_vec).T) for x in X]
     df_clean["T2_stat"] = T2_values
 
-    alpha = 0.5 # Mempengaruhi jumlah kategori "baik" vs "kurang baik"
+    alpha = 0.01 # Mempengaruhi jumlah kategori "baik" vs "kurang baik"
     UCL = (p * (n - 1) / (n - p)) * f.ppf(1 - alpha, p, n - p) if n > p else np.nan
     if np.isnan(UCL):
         st.error("UCL tidak dapat dihitung karena n <= p.")
